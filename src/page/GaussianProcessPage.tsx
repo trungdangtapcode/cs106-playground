@@ -10,6 +10,7 @@ import GpControls from '../components/GaussianProcess/GpControls';
 import GpExplanation from '../components/GaussianProcess/GpExplanation';
 import GpAnimation from '../components/GaussianProcess/GpAnimation';
 import type { Point } from '../components/GaussianProcess/types';
+import useGaussianProcessStore from '../lib/store/gaussianProcessStore';
 
 const GaussianProcessPage: React.FC = () => {
   // State for visualization parameters
@@ -48,8 +49,10 @@ const GaussianProcessPage: React.FC = () => {
   const covMat = gp.cov(xs);
   const marginalVariances = covMat.diag();
   const covSqrt = matrixSqrt(covMat);
-    // Handler for adding points
+  // Handler for adding points
   const handleAddPoint = useCallback((point: Point) => {
+    // Use original point data - the Y value is already calculated by GpVisualization
+    // if useFunctionForY is enabled
     setPoints(prevPoints => [...prevPoints, point]);
   }, []);
   // Handler for generating samples - moved up to fix reference error
@@ -134,7 +137,41 @@ const GaussianProcessPage: React.FC = () => {
   const handleSamplesUpdate = useCallback((newSamples: m.Matrix) => {
     setSamples(newSamples);
   }, []);
-    // Initialize samples when component mounts or key dependencies change
+    // Handler for updating points (drag and drop)
+  const handleUpdatePoint = useCallback((index: number, point: Point) => {
+    setPoints(prevPoints => {
+      const newPoints = [...prevPoints];
+      newPoints[index] = point;
+      return newPoints;
+    });
+    
+    // Generate new samples with the updated point positions
+    handleGenerateSamples();
+  }, [handleGenerateSamples]);
+  
+  // Handler for removing points (right-click)
+  const handleRemovePoint = useCallback((index: number) => {
+    setPoints(prevPoints => {
+      const newPoints = [...prevPoints];
+      newPoints.splice(index, 1);
+      return newPoints;
+    });
+    
+    // Show success message
+    setErrorMessage('Point removed successfully');
+    setTimeout(() => {
+      setErrorMessage(prevMsg => 
+        prevMsg === 'Point removed successfully' 
+          ? null 
+          : prevMsg
+      );
+    }, 2000);
+    
+    // Generate new samples with the point removed
+    handleGenerateSamples();
+  }, [handleGenerateSamples]);
+  
+  // Initialize samples when component mounts or key dependencies change
   useEffect(() => {
     // Only generate samples if they haven't been generated yet or key parameters changed
     if (!samples && covSqrt && covSqrt.columns > 0) {
@@ -184,9 +221,7 @@ const GaussianProcessPage: React.FC = () => {
           </button>
         </div>
       )}
-      
-      <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
-        <GpVisualization
+        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">          <GpVisualization
           width={width}
           height={height}
           xs={xs}
@@ -195,8 +230,48 @@ const GaussianProcessPage: React.FC = () => {
           points={points}
           samples={samples}
           noiseScale={noiseScale}
+          manualX={manualX}
           onAddPoint={handleAddPoint}
+          onUpdatePoint={handleUpdatePoint}
+          onRemovePoint={handleRemovePoint}
+          onManualXChange={handleManualXChange}
+          useFunctionForY={useGaussianProcessStore(state => state.useFunctionForY)}
+          getYValueFromFunction={useGaussianProcessStore(state => state.getYValueFromFunction)}
         />
+          {/* X Position Slider */}
+        <div className="mt-4 mb-2 px-12">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">
+              {/* add this later */}
+              {/* <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline mr-1 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
+              </svg> */}
+              X Position: {parseFloat(manualX).toFixed(1)}
+            </span>
+            <span className="text-xs text-gray-500 italic">Drag the red line or use this slider</span>
+          </div>
+          <input 
+            type="range" 
+            min="0" 
+            max="10" 
+            step="0.1" 
+            value={manualX}
+            onChange={(e) => handleManualXChange(e.target.value)} 
+            className="w-full h-2 mt-2 bg-gradient-to-r from-red-200 to-red-400 rounded-lg appearance-none cursor-pointer"
+            style={{
+              WebkitAppearance: 'none',
+              background: 'linear-gradient(to right, rgba(255,0,0,0.2), rgba(255,0,0,0.5))'
+            }}
+          />
+          <div className="flex justify-between mt-1 px-1 text-xs text-gray-500">
+            <span>0</span>
+            <span>2</span>
+            <span>4</span>
+            <span>6</span>
+            <span>8</span>
+            <span>10</span>
+          </div>
+        </div>
       
         <div className="mt-4 text-sm text-gray-600">
           <p>Click anywhere on the plot to add observations. Samples are automatically redrawn when parameters change.</p>

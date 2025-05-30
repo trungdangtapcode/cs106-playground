@@ -28,8 +28,11 @@ const GpExplanation: React.FC = () => {
       </div>
       
       <div className="mt-4">
-        <h3 className="text-lg font-medium mb-2">How to Use:</h3>
-        <ul className="list-disc pl-6 text-gray-700">          <li><strong>Click on the plot</strong> to add observations (data points).</li>
+        <h3 className="text-lg font-medium mb-2">How to Use:</h3>        <ul className="list-disc pl-6 text-gray-700">          <li><strong>Click on the plot</strong> to add observations (data points).</li>
+          <li><strong>Drag data points</strong> to reposition them interactively.</li>
+          <li><strong>Right-click on a point</strong> to remove it from the plot.</li>
+          <li><strong>Hover over points</strong> to see their exact coordinates.</li>
+          <li>The <strong>dashed red vertical line</strong> shows the currently selected X coordinate position for manual point addition. You can <strong>drag this line</strong> directly or use the slider below the plot to position it.</li>
           <li>The <strong>confidence bands</strong> represent the uncertainty (1 and 2 standard deviations).</li>
           <li>The <strong>dashed line</strong> represents the mean prediction.</li>
           <li>The <strong>colored lines</strong> are random samples from the posterior distribution.</li>

@@ -1,5 +1,7 @@
 import React from 'react';
+import useGaussianProcessStore, { FunctionType } from '../../lib/store/gaussianProcessStore';
 
+// We'll still keep some props for components that haven't been converted yet
 interface GpControlsProps {
   lengthscale: number;
   variance: number;
@@ -48,6 +50,27 @@ const GpControls: React.FC<GpControlsProps> = ({
   onToggleAnimation,
   onClearPoints,
 }) => {
+  // Get store values and actions
+  const selectedFunction = useGaussianProcessStore(state => state.selectedFunction);
+  const setSelectedFunction = useGaussianProcessStore(state => state.setSelectedFunction);
+  const useFunctionForY = useGaussianProcessStore(state => state.useFunctionForY);
+  const setUseFunctionForY = useGaussianProcessStore(state => state.setUseFunctionForY);
+  const getYValueFromFunction = useGaussianProcessStore(state => state.getYValueFromFunction);
+  const addPointWithFunction = useGaussianProcessStore(state => state.addPointWithFunction);
+    // Calculate Y value from function if needed
+  const calculatedY = React.useMemo(() => {
+    if (useFunctionForY && selectedFunction !== FunctionType.NONE) {
+      try {
+        const x = parseFloat(manualX);
+        if (!isNaN(x)) {
+          return getYValueFromFunction(x).toFixed(2);
+        }
+      } catch (error) {
+        console.error("Error calculating Y value:", error);
+      }
+    }
+    return 'N/A';
+  }, [useFunctionForY, selectedFunction, manualX, getYValueFromFunction]);
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -157,9 +180,69 @@ const GpControls: React.FC<GpControlsProps> = ({
               </svg>
               {animating ? 'Stop Animation' : 'Start Animation'}
             </button>
-          </div>
-            <div className="mt-6 p-4 border rounded bg-gray-50">
-            <h3 className="font-medium mb-3">Add Data Point Manually</h3>
+          </div>          <div className="mt-6 p-4 border rounded bg-gray-50">
+            <h3 className="font-medium mb-3">Add Data Point</h3>
+            
+            {/* Function Selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Function Selection:</label>              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setSelectedFunction(FunctionType.NONE)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedFunction === FunctionType.NONE
+                      ? 'bg-blue-500 text-white border-blue-600'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  Manual Input
+                </button>
+                <button
+                  onClick={() => setSelectedFunction(FunctionType.SINE)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedFunction === FunctionType.SINE
+                      ? 'bg-blue-500 text-white border-blue-600'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  sin(x)
+                </button>
+                <button
+                  onClick={() => setSelectedFunction(FunctionType.QUADRATIC)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedFunction === FunctionType.QUADRATIC
+                      ? 'bg-blue-500 text-white border-blue-600'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  x²/100
+                </button>
+                <button
+                  onClick={() => setSelectedFunction(FunctionType.LINEAR)}
+                  className={`px-3 py-2 border rounded text-sm ${
+                    selectedFunction === FunctionType.LINEAR
+                      ? 'bg-blue-500 text-white border-blue-600'
+                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  x/10
+                </button>
+              </div>
+                {/* Use function for Y toggle */}
+              <div className="mt-3">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-4 w-4 text-blue-500 transition duration-150 ease-in-out"
+                    checked={useFunctionForY}
+                    onChange={(e) => setUseFunctionForY(e.target.checked)}
+                  />
+                  <span className="text-sm font-medium text-gray-700">Use function to calculate Y value</span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1 ml-6">When enabled, Y coordinate will be calculated automatically from the selected function</p>
+              </div>
+            </div>
+            
+            {/* X and Y coordinates */}
             <div className="flex gap-4 mb-3">
               <div>
                 <label className="block text-sm font-medium mb-1">X Coordinate:</label>
@@ -173,21 +256,48 @@ const GpControls: React.FC<GpControlsProps> = ({
                   className="px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                   placeholder="0-10"
                 />
+                <p className="text-xs text-red-500 mt-1">
+                  <span className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 inline" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    Shows as dashed red line on plot
+                  </span>
+                </p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Y Coordinate:</label>
-                <input
+                <label className="block text-sm font-medium mb-1">Y Coordinate:</label>                <input
                   type="number"
                   step="0.1"
                   value={manualY}
                   onChange={(e) => onManualYChange(e.target.value)}
-                  className="px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  className={`px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ${
+                    useFunctionForY && selectedFunction !== FunctionType.NONE
+                      ? 'bg-gray-100 cursor-not-allowed opacity-60' 
+                      : ''
+                  }`}
                   placeholder="Any value"
+                  disabled={useFunctionForY && selectedFunction !== FunctionType.NONE}
                 />
+                {useFunctionForY && selectedFunction !== FunctionType.NONE && (
+                  <p className="text-xs text-blue-500 mt-1">
+                    Auto: {calculatedY}
+                  </p>
+                )}
               </div>
             </div>
-            <button
-              onClick={onAddManualPoint}
+              {/* Add point button */}            <button
+              onClick={() => {
+                // If using function to calculate Y, use the store's method
+                if (useFunctionForY && selectedFunction !== FunctionType.NONE) {
+                  addPointWithFunction();
+                  // Call the onGenerateSamples prop to update samples
+                  onGenerateSamples();
+                } else {
+                  // Otherwise use the original method
+                  onAddManualPoint();
+                }
+              }}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 flex items-center"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
