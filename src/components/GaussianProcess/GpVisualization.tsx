@@ -4,6 +4,7 @@ import { scaleLinear } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { Matrix } from 'ml-matrix';
 import type { Point, ConfidenceData, SampleData } from './types';
+import { calculateDisagreement, calculateStdDisagreement } from '../../lib/math/disagreement';
 
 interface GpVisualizationProps {
   width: number;
@@ -285,13 +286,35 @@ const GpVisualization: React.FC<GpVisualizationProps> = ({
           const newY = yScale.invert(y);
           onAddPoint({ x: newX, y: newY });
         }
-      });
-      // Draw vertical guide line for manualX
+      });      // Draw vertical guide line for manualX
     if (manualX !== undefined) {
       const guideLine = parseFloat(manualX);
       if (!isNaN(guideLine) && guideLine >= 0 && guideLine <= 10) {
         // Remove any existing guide line
-        svg.selectAll(".guide-line").remove();        // Create a group for the guide line and its elements
+        svg.selectAll(".guide-line").remove();
+        
+        // Calculate disagreement at this x position if samples are available
+        let disagreementValue = 0;
+        let stdDisagreementValue = 0;
+        
+        if (samples && samples.columns > 1) {
+          // Find the closest x index
+          const xIndex = xs.reduce((closest, x, index, arr) => {
+            return Math.abs(x - guideLine) < Math.abs(arr[closest] - guideLine) ? index : closest;
+          }, 0);
+          
+          // Extract all model predictions at this x
+          const predictions: number[] = [];
+          for (let i = 0; i < samples.columns; i++) {
+            predictions.push(samples.get(xIndex, i));
+          }
+          
+          // Calculate disagreement and standard disagreement
+          disagreementValue = calculateDisagreement(predictions);
+          stdDisagreementValue = calculateStdDisagreement(predictions);
+        }
+        
+        // Create a group for the guide line and its elements
         const guideGroup = svg.append("g")
           .attr("class", "guide-line")
           .style("cursor", "ew-resize");
@@ -408,8 +431,7 @@ const GpVisualization: React.FC<GpVisualizationProps> = ({
         // Add x-value label with background for better visibility
         const labelGroup = guideGroup.append("g")
           .attr("transform", `translate(${xScale(guideLine)}, ${height - padding.bottom + 20})`);
-          
-        // Add label background
+            // Add label background
         labelGroup.append("rect")
           .attr("x", -25)
           .attr("y", -12)
@@ -427,6 +449,41 @@ const GpVisualization: React.FC<GpVisualizationProps> = ({
           .attr("fill", "red")
           .attr("font-weight", "bold")
           .text(`x = ${guideLine.toFixed(1)}`);
+            // Display disagreement value if samples are available
+        if (samples && samples.columns > 1) {
+          // Create a group for the disagreement label (positioned inside the plot)
+          const disagreementGroup = svg.append("g")
+            .attr("class", "disagreement-label")
+            .attr("transform", `translate(${xScale(guideLine)}, ${padding.top + 15})`);
+          
+          // Add label background with semi-transparency
+          disagreementGroup.append("rect")
+            .attr("x", -60)
+            .attr("y", -16)
+            .attr("width", 120)
+            .attr("height", 32)
+            .attr("fill", "rgba(255, 255, 255, 0.8)")
+            .attr("stroke", "purple")
+            .attr("stroke-width", 1)
+            .attr("rx", 4);
+          
+          // Add disagreement value text
+          disagreementGroup.append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", -2)
+            .attr("font-size", "11px")
+            .attr("fill", "purple")
+            .attr("font-weight", "bold")
+            .text(`Disagreement: ${disagreementValue.toFixed(3)}`);
+          
+          // Add standard disagreement value text
+          disagreementGroup.append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", 12)
+            .attr("font-size", "11px")
+            .attr("fill", "purple")
+            .text(`Std: ${stdDisagreementValue.toFixed(3)}`);
+        }
       }
     }
       }, [
