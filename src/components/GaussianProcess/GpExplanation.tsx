@@ -29,12 +29,12 @@ const GpExplanation: React.FC = () => {
       
       <div className="mt-4">
         <h3 className="text-lg font-medium mb-2">How to Use:</h3>
-        <ul className="list-disc pl-6 text-gray-700">
-          <li><strong>Click on the plot</strong> to add observations (data points).</li>
+        <ul className="list-disc pl-6 text-gray-700">          <li><strong>Click on the plot</strong> to add observations (data points).</li>
           <li>The <strong>confidence bands</strong> represent the uncertainty (1 and 2 standard deviations).</li>
           <li>The <strong>dashed line</strong> represents the mean prediction.</li>
           <li>The <strong>colored lines</strong> are random samples from the posterior distribution.</li>
           <li>Adjust sliders to change characteristics of the Gaussian process.</li>
+          <li>When animation is active, use the <strong>Animation Speed</strong> slider to control how fast samples change.</li>
         </ul>
       </div>
     </div>
