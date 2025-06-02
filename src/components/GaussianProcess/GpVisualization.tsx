@@ -56,6 +56,12 @@ const GpVisualization: React.FC<GpVisualizationProps> = ({
     
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+
+
+    // Avoid Right-click
+    svg.on('contextmenu', (event) => {
+      event.preventDefault();
+    });
     
     // Create scales
     const { xScale, yScale } = createScales({ width, height, padding });

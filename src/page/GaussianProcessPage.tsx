@@ -79,7 +79,6 @@ const GaussianProcessPage: React.FC = () => {
       setErrorMessage("Error generating samples: " + (err instanceof Error ? err.message : String(err)));
     }
   }, [covSqrt, means, sampleCount]);
-  
   // Handler for manually adding points
   const handleAddManualPoint = useCallback(() => {
     try {
@@ -114,6 +113,27 @@ const GaussianProcessPage: React.FC = () => {
       setErrorMessage("Error adding point: " + (err instanceof Error ? err.message : String(err)));
     }
   }, [manualX, manualY, handleGenerateSamples]);
+    // Handler for adding point from function
+  const handleAddFunctionPoint = useCallback((point: Point) => {
+    try {      
+      setPoints(prevPoints => [...prevPoints, point]);
+      
+      // Show success message
+      setErrorMessage(`Successfully added point (${point.x.toFixed(2)}, ${point.y.toFixed(2)})`);
+      setTimeout(() => {
+        setErrorMessage(prevMsg => 
+          prevMsg === `Successfully added point (${point.x.toFixed(2)}, ${point.y.toFixed(2)})` 
+            ? null 
+            : prevMsg
+        );
+      }, 2000);
+      
+      // Generate new samples with the new point
+      handleGenerateSamples();
+    } catch (err) {
+      setErrorMessage("Error adding point: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }, [handleGenerateSamples]);
   
   // Handler for updating manual X input
   const handleManualXChange = useCallback((value: string) => {
@@ -270,8 +290,7 @@ const GaussianProcessPage: React.FC = () => {
         <div className="mt-4 text-sm text-gray-600">
           <p>Click anywhere on the plot to add observations. Samples are automatically redrawn when parameters change.</p>
         </div>
-      </div>
-        <GpControls
+      </div>        <GpControls
         lengthscale={lengthscale}
         variance={variance}
         noiseScale={noiseScale}
@@ -289,6 +308,7 @@ const GaussianProcessPage: React.FC = () => {
         onManualXChange={handleManualXChange}
         onManualYChange={handleManualYChange}
         onAddManualPoint={handleAddManualPoint}
+        onAddFunctionPoint={handleAddFunctionPoint}
         onGenerateSamples={handleGenerateSamples}
         onToggleAnimation={handleToggleAnimation}
         onClearPoints={() => setPoints([])}

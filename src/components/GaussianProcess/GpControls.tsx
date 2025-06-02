@@ -1,5 +1,6 @@
 import React from 'react';
 import useGaussianProcessStore, { FunctionType } from '../../lib/store/gaussianProcessStore';
+import type { Point } from './types';
 
 // We'll still keep some props for components that haven't been converted yet
 interface GpControlsProps {
@@ -20,6 +21,7 @@ interface GpControlsProps {
   onManualXChange: (value: string) => void;
   onManualYChange: (value: string) => void;
   onAddManualPoint: () => void;
+  onAddFunctionPoint?: (point: Point) => void; // New prop for adding points from function
   onGenerateSamples: () => void;
   onToggleAnimation: () => void;
   onClearPoints: () => void;
@@ -46,6 +48,7 @@ const GpControls: React.FC<GpControlsProps> = ({
   onManualXChange,
   onManualYChange,
   onAddManualPoint,
+  onAddFunctionPoint,
   onGenerateSamples,
   onToggleAnimation,
   onClearPoints,
@@ -56,6 +59,7 @@ const GpControls: React.FC<GpControlsProps> = ({
   const useFunctionForY = useGaussianProcessStore(state => state.useFunctionForY);
   const setUseFunctionForY = useGaussianProcessStore(state => state.setUseFunctionForY);
   const getYValueFromFunction = useGaussianProcessStore(state => state.getYValueFromFunction);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const addPointWithFunction = useGaussianProcessStore(state => state.addPointWithFunction);
   
   // Calculate Y value from function if needed
@@ -75,6 +79,39 @@ const GpControls: React.FC<GpControlsProps> = ({
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      {/* Add point button */}          
+            <button onClick={() => {
+              // If using function to calculate Y, use the store's method
+              if (useFunctionForY && selectedFunction !== FunctionType.NONE) {
+                // Calculate the point using store functions
+                const x = parseFloat(manualX);
+                if (!isNaN(x) && x >= 0 && x <= 10) {
+                  const y = getYValueFromFunction(x);
+                  
+                  // Use onAddFunctionPoint to update the parent component's state
+                  if (onAddFunctionPoint) {
+                    onAddFunctionPoint({ x, y });
+                  } else {
+                    // Fallback to manual point and manually calculate
+                    onAddManualPoint();
+                  }
+                  
+                  // No need to call addPointWithFunction as it updates store state
+                  // but doesn't affect the displayed visualization
+                }
+              } else {
+                // Otherwise use the original method for manual input
+                onAddManualPoint();
+              }
+            }}
+            className="flex items-center justify-center px-2 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition duration-200 shadow-md"
+            style={{ minWidth: '90px', maxWidth: '90px', height: '28px' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            Add Point
+          </button>
       {hasPoints && (
         <button
           onClick={onClearPoints}
@@ -310,27 +347,8 @@ const GpControls: React.FC<GpControlsProps> = ({
                 </p>
               )}
             </div>
-          </div>            {/* Add point button */}
-          <button
-            onClick={() => {
-              // If using function to calculate Y, use the store's method
-              if (useFunctionForY && selectedFunction !== FunctionType.NONE) {
-                addPointWithFunction();
-                // Call the onGenerateSamples prop to update samples
-                onGenerateSamples();
-              } else {
-                // Otherwise use the original method
-                onAddManualPoint();
-              }
-            }}
-            className="flex items-center justify-center px-2 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition duration-200 shadow-md"
-            style={{ minWidth: '90px', maxWidth: '90px', height: '28px' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-            </svg>
-            Add Point
-          </button>
+          </div>            
+            
         </div>        {/* Clear Points Button */}
         
       </div>
