@@ -290,7 +290,8 @@ const GaussianProcessPage: React.FC = () => {
         <div className="mt-4 text-sm text-gray-600">
           <p>Click anywhere on the plot to add observations. Samples are automatically redrawn when parameters change.</p>
         </div>
-      </div>        <GpControls
+      </div>        
+      <GpControls
         lengthscale={lengthscale}
         variance={variance}
         noiseScale={noiseScale}

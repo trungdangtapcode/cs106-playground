@@ -125,6 +125,29 @@ const GpControls: React.FC<GpControlsProps> = ({
         </button>
       )}
 
+      {/* Clear Points Button */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Y Coordinate:</label>
+        <input
+          type="number"
+          step="0.1"
+          value={manualY}
+          onChange={(e) => onManualYChange(e.target.value)}
+          className={`px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ${
+            useFunctionForY && selectedFunction !== FunctionType.NONE
+              ? 'bg-gray-100 cursor-not-allowed opacity-60' 
+              : ''
+          }`}
+          placeholder="Any value"
+          disabled={useFunctionForY && selectedFunction !== FunctionType.NONE}
+        />
+        {useFunctionForY && selectedFunction !== FunctionType.NONE && (
+          <p className="text-xs text-blue-500 mt-1">
+            Auto: {calculatedY}
+          </p>
+        )}
+      </div>
+
       {/* Kernel Parameters Section */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-semibold mb-4">Kernel Parameters</h2>
@@ -319,37 +342,17 @@ const GpControls: React.FC<GpControlsProps> = ({
               <span className="text-xs text-red-500 mt-1">
                 <span className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor" 
-                       style={{flexShrink: 0, minWidth: '50px', maxWidth: '100px'}}>
+                      style={{flexShrink: 0, minWidth: '50px', maxWidth: '100px'}}>
                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
                   <p style={{fontSize: '10px'}}>Shows as dashed red line on plot</p>
                 </span>
               </span>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Y Coordinate:</label>
-              <input
-                type="number"
-                step="0.1"
-                value={manualY}
-                onChange={(e) => onManualYChange(e.target.value)}
-                className={`px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 ${
-                  useFunctionForY && selectedFunction !== FunctionType.NONE
-                    ? 'bg-gray-100 cursor-not-allowed opacity-60' 
-                    : ''
-                }`}
-                placeholder="Any value"
-                disabled={useFunctionForY && selectedFunction !== FunctionType.NONE}
-              />
-              {useFunctionForY && selectedFunction !== FunctionType.NONE && (
-                <p className="text-xs text-blue-500 mt-1">
-                  Auto: {calculatedY}
-                </p>
-              )}
-            </div>
+            
           </div>            
             
-        </div>        {/* Clear Points Button */}
+        </div>        
         
       </div>
     </div>
