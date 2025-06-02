@@ -20,6 +20,7 @@ interface GuideLineProps {
 export const renderGuideLine = ({
   svg,
   guideLine,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   width,
   height,
   padding,
@@ -50,6 +51,7 @@ export const renderGuideLine = ({
     // Calculate disagreement and standard disagreement
     disagreementValue = calculateDisagreement(predictions);
     stdDisagreementValue = calculateStdDisagreement(predictions);
+    // console.log(`Disagreement at x=${guideLine}: ${disagreementValue}, Std: ${stdDisagreementValue}`);
   }
   
   // Create a group for the guide line and its elements

@@ -19,7 +19,8 @@ const GaussianProcessPage: React.FC = () => {
   const [points, setPoints] = useState<Point[]>([]);
   const [lengthscale, setLengthscale] = useState<number>(1.0);
   const [variance, setVariance] = useState<number>(1.0);
-  const [noiseScale, setNoiseScale] = useState<number>(0.1);  const [sampleCount, setSampleCount] = useState<number>(5);  const [animating, setAnimating] = useState<boolean>(false);
+  const [noiseScale, setNoiseScale] = useState<number>(0.1);  const [sampleCount, setSampleCount] = useState<number>(5);  
+  const [animating, setAnimating] = useState<boolean>(false);
   const [animationSpeed, setAnimationSpeed] = useState<number>(0.5); // Default to a moderate speed
   const [samples, setSamples] = useState<m.Matrix | null>(null);
   
@@ -198,38 +199,39 @@ const GaussianProcessPage: React.FC = () => {
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Interactive Gaussian Process Visualization</h1>
-        {errorMessage && (
-        <div className={`${
-          errorMessage.startsWith("Successfully") 
-            ? "bg-green-100 border border-green-400 text-green-700" 
-            : "bg-red-100 border border-red-400 text-red-700"
-          } px-4 py-3 rounded mb-4`}
+      <h1 className="text-3xl font-bold mb-6">Disagreement Visualization</h1>
+      {errorMessage && (
+      <div className={`${
+        errorMessage.startsWith("Successfully") 
+          ? "bg-green-100 border border-green-400 text-green-700" 
+          : "bg-red-100 border border-red-400 text-red-700"
+        } px-4 py-3 rounded mb-4`}
+      >
+        <p>
+          <strong>{errorMessage.startsWith("Successfully") ? "Success:" : "Error:"}</strong> {errorMessage}
+        </p>
+        <button 
+          onClick={() => setErrorMessage(null)}
+          className={`text-sm ${
+            errorMessage.startsWith("Successfully") 
+              ? "text-green-700 hover:text-green-800" 
+              : "text-red-700 hover:text-red-800"
+            } underline mt-2`}
         >
-          <p>
-            <strong>{errorMessage.startsWith("Successfully") ? "Success:" : "Error:"}</strong> {errorMessage}
-          </p>
-          <button 
-            onClick={() => setErrorMessage(null)}
-            className={`text-sm ${
-              errorMessage.startsWith("Successfully") 
-                ? "text-green-700 hover:text-green-800" 
-                : "text-red-700 hover:text-red-800"
-              } underline mt-2`}
-          >
-            Dismiss
-          </button>
-        </div>
+          Dismiss
+        </button>
+      </div>
       )}
-        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">          <GpVisualization
-          width={width}
-          height={height}
-          xs={xs}
-          means={means}
-          marginalVariances={marginalVariances}
-          points={points}
-          samples={samples}
-          noiseScale={noiseScale}
+        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
+          <GpVisualization
+            width={width}
+            height={height}
+            xs={xs}
+            means={means}
+            marginalVariances={marginalVariances}
+            points={points}
+            samples={samples}
+            noiseScale={noiseScale}
           manualX={manualX}
           onAddPoint={handleAddPoint}
           onUpdatePoint={handleUpdatePoint}
@@ -239,7 +241,7 @@ const GaussianProcessPage: React.FC = () => {
           getYValueFromFunction={useGaussianProcessStore(state => state.getYValueFromFunction)}
         />
           {/* X Position Slider */}
-        <div className="mt-4 mb-2 px-12">
+        <div className="mt-4 mb-2 px-12 w-full">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">
               {/* add this later */}
@@ -263,14 +265,6 @@ const GaussianProcessPage: React.FC = () => {
               background: 'linear-gradient(to right, rgba(255,0,0,0.2), rgba(255,0,0,0.5))'
             }}
           />
-          <div className="flex justify-between mt-1 px-1 text-xs text-gray-500">
-            <span>0</span>
-            <span>2</span>
-            <span>4</span>
-            <span>6</span>
-            <span>8</span>
-            <span>10</span>
-          </div>
         </div>
       
         <div className="mt-4 text-sm text-gray-600">

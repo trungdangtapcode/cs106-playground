@@ -149,6 +149,7 @@ const useGaussianProcessStore = create<GaussianProcessState>((set, get) => ({
     const state = get();
     try {
       const x = parseFloat(state.manualX);
+      console.log('X is:', x);
       
       if (isNaN(x)) {
         state.setErrorMessage("Please enter a valid number for X coordinate");
@@ -164,6 +165,7 @@ const useGaussianProcessStore = create<GaussianProcessState>((set, get) => ({
       let y: number;
       if (state.useFunctionForY && state.selectedFunction !== FunctionType.NONE) {
         y = state.getYValueFromFunction(x);
+        console.log('auto y is:', y);
       } else {
         y = parseFloat(state.manualY);
         if (isNaN(y)) {
@@ -173,6 +175,7 @@ const useGaussianProcessStore = create<GaussianProcessState>((set, get) => ({
       }
       
       state.addPoint({ x, y });
+      console.log('state is:', state.points, { x, y })
       
       // Show success message
       state.setErrorMessage(`Successfully added point (${x.toFixed(2)}, ${y.toFixed(2)})`);

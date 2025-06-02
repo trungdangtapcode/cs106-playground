@@ -149,7 +149,7 @@ const GpControls: React.FC<GpControlsProps> = ({
           <input
             type="range"
             min="1"
-            max="10"
+            max="20"
             step="1"
             value={sampleCount}
             onChange={(e) => onSampleCountChange(parseInt(e.target.value))}
@@ -278,7 +278,8 @@ const GpControls: React.FC<GpControlsProps> = ({
                 onChange={(e) => onManualXChange(e.target.value)}
                 className="px-3 py-2 border rounded w-28 focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                 placeholder="0-10"
-              />              <p className="text-xs text-red-500 mt-1">
+              />              
+              <span className="text-xs text-red-500 mt-1">
                 <span className="flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor" 
                        style={{flexShrink: 0, minWidth: '50px', maxWidth: '100px'}}>
@@ -286,7 +287,7 @@ const GpControls: React.FC<GpControlsProps> = ({
                   </svg>
                   <p style={{fontSize: '10px'}}>Shows as dashed red line on plot</p>
                 </span>
-              </p>
+              </span>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Y Coordinate:</label>
