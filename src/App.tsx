@@ -6,10 +6,12 @@ import './App.css'
 const GaussianProcessPage = lazy(() => import('./page/GaussianProcessPage'));
 
 function App() {
-
+  const showHeader = false;
+  const showFooter = false;
   return (
     <Router>
       <div className="app">
+        {showHeader && (
         <header className="bg-gray-800 text-white p-4">
           <div className="container mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">CS106 Playground</h1>
@@ -25,10 +27,11 @@ function App() {
             </nav>
           </div>
         </header>
+        )}
         
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={
+            <Route path="/home" element={
               <div className="container mx-auto p-4">
                 <h1 className="text-3xl font-bold mb-6">Welcome to CS106 Playground</h1>
                 <p className="mb-4">
@@ -47,7 +50,8 @@ function App() {
                 </div>
               </div>
             } />
-            <Route path="/gaussian-process" element={
+            {/* /gaussian-process */}
+            <Route path="/" element={
               <Suspense fallback={
                 <div className="container mx-auto p-4 flex items-center justify-center h-64">
                   <div className="text-center">
@@ -62,9 +66,11 @@ function App() {
           </Routes>
         </main>
         
+        {showFooter && (
         <footer className="bg-gray-800 text-white p-4 text-center">
           <p>&copy; {new Date().getFullYear()} CS106 Playground</p>
         </footer>
+        )}
       </div>
     </Router>
   )

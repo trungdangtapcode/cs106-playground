@@ -13,6 +13,8 @@ import type { Point } from '../components/GaussianProcess/types';
 import useGaussianProcessStore from '../lib/store/gaussianProcessStore';
 
 const GaussianProcessPage: React.FC = () => {
+  const isShowExplaination = false;
+
   // State for visualization parameters
   const [width, setWidth] = useState(800);
   const [height, setHeight] = useState(400);
@@ -315,7 +317,11 @@ const GaussianProcessPage: React.FC = () => {
         onClearPoints={() => setPoints([])}
       />
       
-      <GpExplanation />
+      {/* Explanation component for Gaussian Processes */}
+      {isShowExplaination &&
+        <GpExplanation />
+      }
+      ====================================================================================
       
       {/* Animation component doesn't render UI, but handles the animation logic */}      <GpAnimation
         animating={animating}
