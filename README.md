@@ -1,7 +1,4 @@
-# Gaussian Process Visualization Tool
-
-![GP Visualization Banner](https://placeholder.com/wp-content/uploads/2018/10/placeholder-1024x800.png)
-*Banner showing a Gaussian Process with confidence bands and sample points*
+# Gaussian Process and Disagreement Visualization
 
 ## Introduction
 
