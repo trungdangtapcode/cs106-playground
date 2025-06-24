@@ -5,13 +5,15 @@
 
 ## Introduction
 
+This repo for visualizing Disagreement or Uncertainty in Gaussian Processes (GPs) to illutrasing the concepts for exploration in Reinforment Learning, especially these papers: "MaxInfoRL: Boosting exploration in reinforcement learning through information gain maximization", "Self-Supervised Exploration via Disagreement", "Curiosity-driven Exploration by Self-supervised Prediction" and "Optimistic Active Exploration of Dynamical Systems".
+
 This interactive web application provides powerful tools for visualizing Gaussian Processes (GPs), their uncertainty, and model disagreement. Built with React, TypeScript, and D3.js, it offers an intuitive interface for exploring key concepts in probabilistic machine learning.
 
 ## Features
 
 ### 🧮 Interactive Gaussian Process Model
 
-![GP Main Visualization](https://placeholder.com/wp-content/uploads/2018/10/placeholder-800x500.png)
+![GP Main Visualization](./public/Screenshot%202025-06-24%20184615.png)
 *Screenshot of the main GP visualization with data points and confidence bands*
 
 - **Real-time GP inference**: Watch how the model updates as you add data points
@@ -21,7 +23,7 @@ This interactive web application provides powerful tools for visualizing Gaussia
 
 ### 📊 Disagreement Visualization
 
-![Model Disagreement](https://placeholder.com/wp-content/uploads/2018/10/placeholder-600x400.png)
+![Model Disagreement](./public/Screenshot%202025-06-24%20184636.png)
 *Close-up of the disagreement visualization showing multiple model samples and the guide line*
 
 - **Sample visualization**: Generate and display multiple samples from the posterior distribution
@@ -30,7 +32,7 @@ This interactive web application provides powerful tools for visualizing Gaussia
 
 ### ⚙️ Customizable Parameters
 
-![Parameter Controls](https://placeholder.com/wp-content/uploads/2018/10/placeholder-600x400.png)
+![Parameter Controls](./public/Screenshot%202025-06-24%20184651.png)
 *Screenshot of the control panel with parameter sliders and function selectors*
 
 - **Kernel settings**: Adjust lengthscale and variance to control model smoothness
@@ -39,11 +41,16 @@ This interactive web application provides powerful tools for visualizing Gaussia
 
 ### 🎬 Animation Capabilities
 
-![Animation Preview](https://placeholder.com/wp-content/uploads/2018/10/placeholder-600x400.png)
-*An animated preview of GP samples changing over time*
+An animated of GP samples changing over time
 
 - **Dynamic sampling**: Watch how samples evolve with adjustable animation speed
 - **Visual learning**: Understand the stochastic nature of Gaussian processes
+
+### Function choose
+![Animation Preview](./public/example_datafunc.png)
+*Can choose function for y-value calculation*
+
+- **Utility**: can easily add new data points on x-axis
 
 ## Architecture
 
@@ -133,16 +140,3 @@ This tool is designed for both students and educators to gain intuition about:
 ## Contributing
 
 Contributions are welcome! Whether you're fixing bugs, improving the documentation, or proposing new features, please feel free to make a pull request.
-
----
-
-## Image Notes
-
-The placeholder images in this README should be replaced with actual screenshots or illustrations of the application. To complete the documentation, please create and add the following:
-
-1. **GP Banner** (1024×800px): A header image showing a Gaussian Process with confidence intervals
-2. **Main Visualization** (800×500px): Screenshot of the main GP visualization with some data points and samples
-3. **Model Disagreement** (600×400px): Close-up of the disagreement visualization with the guide line
-4. **Parameter Controls** (600×400px): Screenshot of the control panel with parameter sliders
-5. **Animation Preview** (600×400px): An animated GIF showing the sampling animation in action
-```
